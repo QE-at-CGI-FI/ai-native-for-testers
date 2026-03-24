@@ -1,0 +1,52 @@
+name: E2E — Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Target URL (leave blank for default GitHub Pages)'
+        required: false
+        default: 'https://qe-at-cgi-fi.github.io/ai-native-for-testers/'
+  # Also run automatically after a successful deploy to pages
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  e2e-production:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests against production
+        run: npx playwright test --project=chromium
+        env:
+          CI: true
+          BASE_URL: ${{ inputs.base_url || 'https://qe-at-cgi-fi.github.io/ai-native-for-testers/' }}
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-production
+          path: playwright-report/
+          retention-days: 14

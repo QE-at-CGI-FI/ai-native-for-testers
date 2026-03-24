@@ -41,7 +41,8 @@ watch(
     } else {
       form.value = EMPTY_FORM()
     }
-  }
+  },
+  { immediate: true }
 )
 
 function handleSave() {
