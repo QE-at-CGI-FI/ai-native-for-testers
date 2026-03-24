@@ -1,5 +1,10 @@
 # Bug Report — Agent Inventory
 
+NOTE: 
+- unit-test and e2e pipelines are failing. 
+- we did not yet implement playwright test with performance baseline measurement monitoring. 
+
+
 Found by static code analysis and source review.
 Files reviewed: `src/App.vue`, `src/components/AgentCard.vue`, `src/components/AgentModal.vue`, `src/data/defaultAgents.js`, `src/style.css`
 
